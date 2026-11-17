@@ -872,6 +872,9 @@ footer a:hover {
   .faqform {
     grid-template-columns: 1fr;
   }
+  .btn.ghost {
+    display: none;
+  }
   .hero {
     padding-top: 50px;
   }
