@@ -2,7 +2,7 @@
 
 export const EMAIL = "tonaldofc@gmail.com";
 export const PHONE = "+61 0410 889 446";
-export const ADDRESS = "44 Wallangarra Blvd, Harkness · Melton, VIC 3337";
+export const ADDRESS = "44 Wallangarra Blvd, Harkness · Melbourne, VIC 3337";
 
 export const NAV_LINKS = [
   ["Home", "#top"],
@@ -113,7 +113,7 @@ export const QUOTES = [
   [
     "P",
     "Parent",
-    "Melton",
+    "Melbourne",
     "Placeholder: a parent quote about their child's confidence and progress.",
   ],
   [
@@ -125,7 +125,7 @@ export const QUOTES = [
   [
     "A",
     "Adult player",
-    "Melton",
+    "Melbourne",
     "Placeholder: an adult player quote about the sessions and community.",
   ],
 ];

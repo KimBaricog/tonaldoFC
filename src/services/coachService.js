@@ -7,6 +7,7 @@ export const toCoach = (row) => ({
   id: row.id,
   name: row.name,
   role: row.role || '',
+  details: row.details || '',
   src: row.photo_path ? publicUrl(row.photo_path) : null,
   path: row.photo_path,
   order: row.sort_order,

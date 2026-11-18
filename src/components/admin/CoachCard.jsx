@@ -6,11 +6,12 @@ export default function CoachCard({ coach, index, total, onMove, onChanged }) {
   const fileRef = useRef(null)
   const [name, setName] = useState(coach.name)
   const [role, setRole] = useState(coach.role)
+  const [details, setDetails] = useState(coach.details)
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const dirty = name.trim() !== coach.name || role.trim() !== coach.role || file !== null
+  const dirty = name.trim() !== coach.name || role.trim() !== coach.role || details.trim() !== coach.details || file !== null
 
   useEffect(() => () => preview && URL.revokeObjectURL(preview), [preview])
 
@@ -24,7 +25,7 @@ export default function CoachCard({ coach, index, total, onMove, onChanged }) {
     try { await action(); await onChanged() } catch { setError('Something went wrong. Please try again.') }
     setBusy(false)
   }
-  const save = () => run(async () => { await updateCoach(coach, { name: name.trim(), role: role.trim(), file }); setFile(null); setPreview(null) })
+  const save = () => run(async () => { await updateCoach(coach, { name: name.trim(), role: role.trim(), details: details.trim(), file }); setFile(null); setPreview(null) })
   const remove = () => window.confirm(`Remove ${coach.name} from the website? This cannot be undone.`) && run(() => deleteCoach(coach))
 
   const shown = preview || coach.src
@@ -38,6 +39,7 @@ export default function CoachCard({ coach, index, total, onMove, onChanged }) {
       <div className="adm-fields">
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" aria-label="Name" />
         <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" aria-label="Role" />
+        <textarea rows="3" maxLength={600} value={details} onChange={(e) => setDetails(e.target.value)} placeholder="Details: short bio, experience, qualifications" aria-label="Details" />
         <div className="adm-actions">
           <button className="btn sm" onClick={save} disabled={!dirty || busy || !name.trim()}>{busy ? 'Working…' : 'Save'}</button>
           <span className="adm-move">

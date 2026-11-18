@@ -1,38 +1,24 @@
-/* Public coaches section (centred cards, works with any number of coaches) */
-.coach-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 28px;
-}
-.coach-list .coach {
-  width: calc((100% - 56px) / 3);
-}
-.ph-initials {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-size: 84px;
-  font-weight: 900;
-  color: var(--gold);
-  background: radial-gradient(circle at 50% 30%, #2b2b2b, #070707);
-  letter-spacing: -0.04em;
-}
-.skel-card {
-  min-height: 380px;
-}
-.skel-card .ph {
-  height: 100%;
-  min-height: 380px;
-}
-@media (max-width: 1100px) {
-  .coach-list .coach {
-    width: calc((100% - 28px) / 2);
-  }
-}
-@media (max-width: 720px) {
-  .coach-list .coach {
-    width: 100%;
-  }
-}
+/* Public coaches section: slider (scroll-snap), cards and the "Read more" window */
+.slider{position:relative}
+.coach-track{--pv:3;display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px 4px 24px;margin:0 -4px;outline:0;-webkit-overflow-scrolling:touch}
+.coach-track::-webkit-scrollbar{display:none}.coach-track.few{justify-content:center}
+.coach-slide{flex:0 0 calc((100% - (var(--pv) - 1) * 28px) / var(--pv));scroll-snap-align:start;display:flex;flex-direction:column}
+.coach-slide .bd{display:flex;flex-direction:column;flex:1}
+.coach-slide h3{font-size:22px}.coach-slide .role{color:var(--gd);font-weight:700;margin:4px 0 10px;font-size:15px}
+.coach-slide .details{color:var(--mut);font-size:15px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line;margin:0}
+.coach-slide .more{align-self:flex-start;margin-top:auto;padding-top:12px;background:none;border:0;font:inherit;font-weight:800;font-size:14px;color:var(--ink);cursor:pointer}.coach-slide .more:hover{color:var(--gd)}
+.ph-initials{width:100%;height:100%;display:grid;place-items:center;font-size:84px;font-weight:900;color:var(--gold);background:radial-gradient(circle at 50% 30%,#2b2b2b,#070707);letter-spacing:-.04em}
+.skel-card{min-height:380px}.skel-card .ph{height:100%;min-height:380px}
+.sl-btn{position:absolute;top:140px;z-index:2;width:50px;height:50px;border-radius:50%;border:0;background:var(--ink);color:var(--gold);font-size:30px;line-height:1;padding-bottom:4px;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.35);transition:all .15s}
+.sl-btn:hover:not(:disabled){background:var(--gold);color:var(--ink)}.sl-btn:disabled{opacity:0;pointer-events:none}.sl-btn.prev{left:-24px}.sl-btn.next{right:-24px}
+.sl-dots{display:flex;justify-content:center;gap:10px;margin-top:4px}
+.sl-dots button{width:10px;height:10px;border-radius:999px;border:0;background:#cfc8b3;cursor:pointer;padding:0;transition:all .2s}.sl-dots button.on{width:30px;background:var(--gold)}
+.cm{position:fixed;inset:0;z-index:100;background:rgba(5,5,5,.88);display:flex;align-items:center;justify-content:center;padding:24px}
+.cm-box{position:relative;display:grid;grid-template-columns:320px 1fr;max-width:860px;width:100%;max-height:90vh;background:#fff;border-radius:26px;overflow:hidden;border:2px solid var(--gold);box-shadow:0 40px 90px rgba(0,0,0,.6)}
+.cm-photo{background:#0a0a0a;min-height:340px}.cm-photo img{width:100%;height:100%;object-fit:cover}
+.cm-body{padding:40px 36px;overflow-y:auto}.cm-body .kick{margin-bottom:8px}.cm-body h3{font-size:32px;font-weight:900;letter-spacing:-.03em;margin-bottom:16px}
+.cm-body p{color:#3b3b42;font-size:17px;line-height:1.7;white-space:pre-line}
+.cm-close{position:absolute;top:14px;right:14px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(10,10,10,.75);color:#fff;cursor:pointer;font-size:15px}.cm-close:hover{background:var(--gold);color:var(--ink)}
+@media(max-width:1100px){.coach-track{--pv:2}.sl-btn.prev{left:-12px}.sl-btn.next{right:-12px}}
+@media(max-width:720px){.coach-track{--pv:1;gap:16px}.coach-slide{flex-basis:88%}.coach-track.few .coach-slide{flex-basis:100%}.sl-btn{display:none}
+.cm{padding:12px;align-items:flex-end}.cm-box{grid-template-columns:1fr;max-height:92vh;overflow-y:auto}.cm-photo{min-height:240px;height:240px}.cm-body{padding:26px 22px;overflow:visible}}

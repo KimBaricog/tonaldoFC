@@ -108,6 +108,7 @@ img {
 }
 .kick.gold {
   color: var(--gold);
+  font-size: 1.2rem;
 }
 h2,
 .h2 {

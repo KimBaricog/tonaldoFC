@@ -6,6 +6,7 @@ export default function CoachForm({ nextOrder, onAdded }) {
   const fileRef = useRef(null)
   const [name, setName] = useState('')
   const [role, setRole] = useState('')
+  const [details, setDetails] = useState('')
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -28,8 +29,8 @@ export default function CoachForm({ nextOrder, onAdded }) {
     setBusy(true)
     setMessage(null)
     try {
-      await createCoach({ name: name.trim(), role: role.trim(), file, order: nextOrder })
-      setName(''); setRole(''); setFile(null); setPreview(null)
+      await createCoach({ name: name.trim(), role: role.trim(), details: details.trim(), file, order: nextOrder })
+      setName(''); setRole(''); setDetails(''); setFile(null); setPreview(null)
       setMessage({ type: 'ok', text: 'Coach added. They now appear on the website.' })
       await onAdded()
     } catch {
@@ -50,6 +51,8 @@ export default function CoachForm({ nextOrder, onAdded }) {
         <div className="adm-fields">
           <input required placeholder="Name (e.g. Alex Silva)" value={name} onChange={(e) => setName(e.target.value)} />
           <input placeholder="Role (e.g. Head coach)" value={role} onChange={(e) => setRole(e.target.value)} />
+          <textarea rows="4" maxLength={600} placeholder="Details: short bio, experience, qualifications (optional)" value={details} onChange={(e) => setDetails(e.target.value)} />
+          <small className="adm-muted">{details.length}/600 · shown on the coach's card and when visitors click "Read more"</small>
           <button className="btn" disabled={busy || !name.trim()}>{busy ? 'Adding…' : 'Add coach'}</button>
         </div>
       </div>
