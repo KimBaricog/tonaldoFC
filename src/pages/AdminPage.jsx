@@ -11,6 +11,7 @@ import LoginForm from "../components/admin/LoginForm";
 import UploadForm from "../components/admin/UploadForm";
 import PhotoManager from "../components/admin/PhotoManager";
 import CoachManager from "../components/admin/CoachManager";
+import AdminAccounts from "../components/admin/AdminAccounts";
 import { img } from "../utils/img";
 import "./style/admin.css";
 
@@ -21,7 +22,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [tab, setTab] = useState(
-    window.location.hash === "#coaches" ? "coaches" : "gallery",
+    ["coaches", "admins"].includes(window.location.hash.slice(1))
+      ? window.location.hash.slice(1)
+      : "gallery",
   );
   const switchTab = (t) => {
     setTab(t);
@@ -43,15 +46,17 @@ export default function AdminPage() {
     return onAuthChange(setSession);
   }, []);
 
+  // Keyed on the user id (not the session object) so refreshing a token or changing a password doesn't re-run the check
+  const userId = session?.user?.id;
   useEffect(() => {
-    if (!session) {
+    if (!userId) {
       setAllowed(null);
       return;
     }
     checkIsAdmin()
       .then(setAllowed)
       .catch(() => setAllowed(false));
-  }, [session]);
+  }, [userId]);
 
   const reload = useCallback(async () => {
     try {
@@ -112,8 +117,14 @@ export default function AdminPage() {
           >
             Coaches
           </button>
+          <button
+            className={tab === "admins" ? "on" : ""}
+            onClick={() => switchTab("admins")}
+          >
+            Admins &amp; account
+          </button>
         </nav>
-        {tab === "gallery" ? (
+        {tab === "gallery" && (
           <>
             <UploadForm categories={categories} onUploaded={reload} />
             <PhotoManager
@@ -124,9 +135,9 @@ export default function AdminPage() {
               onChanged={reload}
             />
           </>
-        ) : (
-          <CoachManager />
         )}
+        {tab === "coaches" && <CoachManager />}
+        {tab === "admins" && <AdminAccounts email={session.user.email} />}
       </>
     );
 

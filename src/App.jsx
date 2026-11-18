@@ -40,7 +40,6 @@ export default function App() {
       <OpeningHours />
       <Coaches />
       <Gallery />
-      <Testimonials />
       <CallToAction />
       <ContactSection />
       <MapBlock />
