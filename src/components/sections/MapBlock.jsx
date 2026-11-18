@@ -1,31 +1,51 @@
 import { useEffect, useState } from "react";
 import SectionHead from "../ui/SectionHead";
-import { ADDRESS, EMAIL, PHONE, HOURS } from "../../data/content";
+import { EMAIL, PHONE, HOURS } from "../../data/content";
+import { LOCATIONS } from "../../data/locations";
 import { getOpenStatus } from "../../utils/openStatus";
 import "./style/map.css";
 
 export default function MapBlock() {
   const [status, setStatus] = useState(getOpenStatus);
+  const [activeId, setActiveId] = useState(LOCATIONS[0].id);
   useEffect(() => {
     const timer = setInterval(() => setStatus(getOpenStatus()), 60000);
     return () => clearInterval(timer);
   }, []);
 
-  const query = encodeURIComponent(`${ADDRESS.replace("·", ",")}, Australia`);
-  const embedUrl = `https://www.google.com/maps?q=${query}&output=embed`;
+  const loc = LOCATIONS.find((l) => l.id === activeId) ?? LOCATIONS[0];
+  const query = encodeURIComponent(loc.address || loc.mapQuery);
+  const zoom = loc.address ? 16 : 14;
+  const embedUrl = `https://www.google.com/maps?q=${query}&z=${zoom}&output=embed`;
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}`;
+  const tel = `tel:${PHONE.replace(/[^+\d]/g, "")}`;
 
   return (
     <section className="sec" id="find-us">
       <SectionHead
         kick="Find us"
-        title="Visit the academy"
-        text="Come and train with us at our Melton base."
+        title="Train near you"
+        text={`Tonaldo FC runs sessions across ${LOCATIONS.length} locations. Pick yours to see it on the map.`}
       />
+
+      <div className="chips loc-chips" role="tablist" aria-label="Locations">
+        {LOCATIONS.map((l) => (
+          <button
+            key={l.id}
+            role="tab"
+            aria-selected={l.id === loc.id}
+            className={l.id === loc.id ? "chip on" : "chip"}
+            onClick={() => setActiveId(l.id)}
+          >
+            {l.name}
+          </button>
+        ))}
+      </div>
+
       <div className="map-wrap">
         <aside className="map-card">
-          <div className="kick gold">Tonaldo FC</div>
-          <h3>Football Academy</h3>
+          <div className="kick gold">{loc.note || "Tonaldo FC"}</div>
+          <h3>{loc.name}</h3>
           <span className={`map-status ${status.open ? "on" : "off"}`}>
             <i />
             {status.text}
@@ -34,11 +54,14 @@ export default function MapBlock() {
           <ul className="map-info">
             <li>
               <span className="mi">⌖</span>
-              <span>{ADDRESS}</span>
+              <span>
+                {loc.address ||
+                  "Contact us for the exact training venue and session times."}
+              </span>
             </li>
             <li>
               <span className="mi">✆</span>
-              <a href={`tel:${PHONE.replace(/[^+\d]/g, "")}`}>{PHONE}</a>
+              <a href={tel}>{PHONE}</a>
             </li>
             <li>
               <span className="mi">✉</span>
@@ -64,10 +87,7 @@ export default function MapBlock() {
             >
               Get directions
             </a>
-            <a
-              className="btn ghost"
-              href={`tel:${PHONE.replace(/[^+\d]/g, "")}`}
-            >
+            <a className="btn ghost" href={tel}>
               Call us
             </a>
           </div>
@@ -79,7 +99,8 @@ export default function MapBlock() {
             <div className="map-pulse" />
           </div>
           <iframe
-            title="Map showing the Tonaldo FC location"
+            key={loc.id}
+            title={`Map of Tonaldo FC ${loc.name}`}
             src={embedUrl}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"

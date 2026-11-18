@@ -1,17 +1,26 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import SectionHead from "../ui/SectionHead";
 import Lightbox from "../ui/Lightbox";
 import useGallery from "../../hooks/useGallery";
+import useSlider from "../../hooks/useSlider";
+import useAutoplay from "../../hooks/useAutoplay";
+import useInView from "../../hooks/useinView";
 import "./style/gallery.css";
 
-const INITIAL_COUNT = 5; // photos shown before the "Show all" button (change this number to show more or fewer)
+const AUTO_SLIDE_MS = 2000; // time between automatic slides
+const MAX_DOTS = 8; // more pages than this: show "3 / 12" instead of dots
 
 export default function Gallery() {
-  const sectionRef = useRef(null);
-  const [expanded, setExpanded] = useState(false);
   const { images, loading, error } = useGallery();
   const [category, setCategory] = useState("All");
   const [active, setActive] = useState(null); // index of the open photo in `visible`
+  const [playing, setPlaying] = useState(true); // the visitor's play/pause button
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [touching, setTouching] = useState(false);
+  const touchTimer = useRef(null);
+  const sectionRef = useRef(null);
+  const inView = useInView(sectionRef);
 
   const categories = useMemo(
     () => ["All", ...new Set(images.map((i) => i.category))],
@@ -19,28 +28,39 @@ export default function Gallery() {
   );
   const visible =
     category === "All" ? images : images.filter((i) => i.category === category);
+  const { ref, page, pages, measure, goTo, canSlide } = useSlider(
+    visible.length,
+  );
 
-  const shown = expanded ? visible : visible.slice(0, INITIAL_COUNT);
-  const hiddenCount = visible.length - INITIAL_COUNT;
+  // start from the first photo whenever the filter or the list changes
+  useEffect(() => {
+    ref.current?.scrollTo({ left: 0 });
+    measure();
+  }, [category, visible.length, loading, measure, ref]);
+  useEffect(() => () => clearTimeout(touchTimer.current), []);
+
+  // slide automatically, but not while the visitor hovers, focuses, touches, has a photo open, or scrolled away
+  const paused =
+    !playing || hovered || focused || touching || active !== null || !inView;
+  useAutoplay({
+    enabled: canSlide,
+    paused,
+    page,
+    pages,
+    goTo,
+    delay: AUTO_SLIDE_MS,
+  });
 
   const pick = (c) => {
     setCategory(c);
-    setExpanded(false);
     setActive(null);
   };
-  const toggle = () => {
-    if (expanded) {
-      setExpanded(false);
-      // jump back to the top of the gallery so the visitor isn't left at the bottom of a shorter page
-      requestAnimationFrame(() =>
-        sectionRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        }),
-      );
-    } else {
-      setExpanded(true);
-    }
+  const onTouchStart = () => {
+    clearTimeout(touchTimer.current);
+    setTouching(true);
+  };
+  const onTouchEnd = () => {
+    touchTimer.current = setTimeout(() => setTouching(false), 6000);
   };
 
   return (
@@ -68,10 +88,12 @@ export default function Gallery() {
       )}
 
       {loading && (
-        <div className="gallery">
-          {Array.from({ length: 6 }, (_, i) => (
-            <div className="g-item skel" key={i} />
-          ))}
+        <div className="g-slider">
+          <div className="g-track">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div className="g-item g-slide skel" key={i} />
+            ))}
+          </div>
         </div>
       )}
       {error && (
@@ -84,35 +106,92 @@ export default function Gallery() {
       )}
 
       {!loading && !error && visible.length > 0 && (
-        <div className="gallery">
-          {shown.map((p, i) => (
-            <button
-              key={p.id}
-              className={`g-item${category === "All" && i === 0 ? " feat" : ""}${i >= INITIAL_COUNT ? " more" : ""}`}
-              onClick={() => setActive(i)}
-              aria-label={`View photo: ${p.caption}`}
+        <>
+          <div
+            className="g-slider"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            {canSlide && (
+              <button
+                className="sl-btn prev"
+                aria-label="Previous photos"
+                onClick={() => goTo(page <= 0 ? pages - 1 : page - 1)}
+              >
+                ‹
+              </button>
+            )}
+            <div
+              className={`g-track${canSlide ? "" : " few"}`}
+              ref={ref}
+              onScroll={measure}
+              tabIndex={0}
+              aria-label="Gallery photos"
             >
-              <img src={p.src} alt={p.alt} loading="lazy" />
-              <span className="g-cap">
-                <b>{p.category}</b>
-                {p.caption}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+              {visible.map((p, i) => (
+                <button
+                  key={p.id}
+                  className="g-item g-slide"
+                  onClick={() => setActive(i)}
+                  aria-label={`View photo: ${p.caption || p.alt}`}
+                >
+                  <img src={p.src} alt={p.alt} loading="lazy" />
+                  <span className="g-cap">
+                    <b>{p.category}</b>
+                    {p.caption}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {canSlide && (
+              <button
+                className="sl-btn next"
+                aria-label="Next photos"
+                onClick={() => goTo(page >= pages - 1 ? 0 : page + 1)}
+              >
+                ›
+              </button>
+            )}
+          </div>
 
-      {!loading && !error && visible.length > INITIAL_COUNT && (
-        <div className="g-more">
-          <span>
-            Showing {shown.length} of {visible.length} photos
-          </span>
-          <button className="btn dk" aria-expanded={expanded} onClick={toggle}>
-            {expanded
-              ? "Show less ↑"
-              : `Show all photos (${hiddenCount} more) ↓`}
-          </button>
-        </div>
+          {canSlide && (
+            <div className="g-controls">
+              <button
+                className="g-play"
+                aria-label={playing ? "Pause slideshow" : "Play slideshow"}
+                onClick={() => setPlaying(!playing)}
+              >
+                {playing ? "❚❚" : "▶"}
+              </button>
+              {pages <= MAX_DOTS ? (
+                <div
+                  className="sl-dots"
+                  role="tablist"
+                  aria-label="Choose photos page"
+                >
+                  {Array.from({ length: pages }, (_, i) => (
+                    <button
+                      key={i}
+                      role="tab"
+                      aria-selected={i === page}
+                      aria-label={`Page ${i + 1}`}
+                      className={i === page ? "on" : ""}
+                      onClick={() => goTo(i)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <span className="g-count">
+                  {page + 1} / {pages}
+                </span>
+              )}
+            </div>
+          )}
+        </>
       )}
 
       {active !== null && (
