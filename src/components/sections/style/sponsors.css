@@ -223,7 +223,7 @@ a.sp-card:hover .sp-word {
     padding: 22px;
   }
   .sp-logo {
-    height: 140px;
+    height: auto;
   }
   .sp-text h3 {
     font-size: 28px;
@@ -237,7 +237,7 @@ a.sp-card:hover .sp-word {
 @media (max-width: 720px) {
   .sp-card {
     width: 150px;
-    height: 90px;
+    height: auto;
     padding: 14px;
   }
   .sp-card .sp-word {

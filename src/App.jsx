@@ -42,7 +42,6 @@ export default function App() {
       <Coaches />
       <Gallery />
       <Sponsors />
-      <CallToAction />
       <ContactSection />
       <MapBlock />
       <Footer />
