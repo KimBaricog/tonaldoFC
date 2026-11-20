@@ -62,6 +62,7 @@ export default function Sponsors() {
         title="Proudly supported by"
         text="The businesses and people who back Tonaldo FC and help our players grow."
       />
+      {/* 
 
       {principal.length > 0 && (
         <div className="sp-principal">
@@ -80,6 +81,22 @@ export default function Sponsors() {
           ))}
         </div>
       )}
+*/}
+      <div className="sp-cta">
+        <div>
+          <h3>Become a sponsor</h3>
+          <p>
+            Back local football and put your business in front of our players,
+            families and community.
+          </p>
+        </div>
+        <a
+          className="btn"
+          href={`mailto:${EMAIL}?subject=${encodeURIComponent("Sponsorship enquiry")}`}
+        >
+          Get in touch
+        </a>
+      </div>
 
       {partners.length > 0 && (
         <div
@@ -116,22 +133,6 @@ export default function Sponsors() {
           )} */}
         </div>
       )}
-
-      <div className="sp-cta">
-        <div>
-          <h3>Become a sponsor</h3>
-          <p>
-            Back local football and put your business in front of our players,
-            families and community.
-          </p>
-        </div>
-        <a
-          className="btn"
-          href={`mailto:${EMAIL}?subject=${encodeURIComponent("Sponsorship enquiry")}`}
-        >
-          Get in touch
-        </a>
-      </div>
     </section>
   );
 }

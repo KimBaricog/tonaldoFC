@@ -41,9 +41,10 @@ export default function App() {
       <OpeningHours />
       <Coaches />
       <Gallery />
-      <Sponsors />
+
       <ContactSection />
       <MapBlock />
+      <Sponsors />
       <Footer />
     </>
   );

@@ -89,7 +89,7 @@ a.sp-feature:hover {
   gap: var(--gap);
 }
 .sp-card {
-  width: 210px;
+  width: 150px;
   height: auto;
   border: none;
   background: transparent;
@@ -114,7 +114,6 @@ a.sp-feature:hover {
 a.sp-card:hover {
   border-color: var(--gold);
   transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 a.sp-card:hover img {
   filter: none;
