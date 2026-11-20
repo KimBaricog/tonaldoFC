@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import {
   checkIsAdmin,
@@ -6,30 +6,28 @@ import {
   onAuthChange,
   signOut,
 } from "../services/adminService";
-import { fetchGalleryImages } from "../services/galleryService";
+import AdminLayout from "../components/admin/AdminLayout";
 import LoginForm from "../components/admin/LoginForm";
-import UploadForm from "../components/admin/UploadForm";
-import PhotoManager from "../components/admin/PhotoManager";
+import DashboardHome from "../components/admin/DashboardHome";
+import GalleryManager from "../components/admin/GalleryManager";
 import CoachManager from "../components/admin/CoachManager";
+import SponsorManager from "../components/admin/SponsorManager";
 import AdminAccounts from "../components/admin/AdminAccounts";
-import { img } from "../utils/img";
 import "./style/admin.css";
+
+const TABS = ["dashboard", "gallery", "coaches", "sponsors", "admins"];
+const tabFromHash = () => {
+  const h = window.location.hash.slice(1);
+  return TABS.includes(h) ? h : "dashboard";
+};
+
+// Simple centred screen for the loading / error states
+const Screen = ({ children }) => <div className="adm-screen">{children}</div>;
 
 export default function AdminPage() {
   const [session, setSession] = useState(undefined); // undefined = still checking
   const [allowed, setAllowed] = useState(null); // null = checking, true/false after the admin check
-  const [photos, setPhotos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [tab, setTab] = useState(
-    ["coaches", "admins"].includes(window.location.hash.slice(1))
-      ? window.location.hash.slice(1)
-      : "gallery",
-  );
-  const switchTab = (t) => {
-    setTab(t);
-    window.history.replaceState(null, "", `#${t}`);
-  };
+  const [tab, setTab] = useState(tabFromHash);
 
   useEffect(() => {
     document.title = "Admin · Tonaldo FC";
@@ -38,6 +36,12 @@ export default function AdminPage() {
     meta.content = "noindex,nofollow";
     document.head.appendChild(meta);
     return () => meta.remove();
+  }, []);
+
+  useEffect(() => {
+    const onHash = () => setTab(tabFromHash());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
   useEffect(() => {
@@ -58,110 +62,54 @@ export default function AdminPage() {
       .catch(() => setAllowed(false));
   }, [userId]);
 
-  const reload = useCallback(async () => {
-    try {
-      setPhotos(await fetchGalleryImages());
-      setError(false);
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-  useEffect(() => {
-    if (allowed) reload();
-  }, [allowed, reload]);
-
-  const categories = useMemo(
-    () => [...new Set(photos.map((p) => p.category))],
-    [photos],
-  );
-
-  let body;
   if (!supabase)
-    body = (
-      <div className="adm-card">
-        <h1>Admin not set up yet</h1>
-        <p>
-          Add <code>VITE_SUPABASE_URL</code> and{" "}
-          <code>VITE_SUPABASE_ANON_KEY</code> to your environment variables,
-          then restart.
-        </p>
-      </div>
+    return (
+      <Screen>
+        <div className="adm-card">
+          <h1>Admin not set up yet</h1>
+          <p>
+            Add <code>VITE_SUPABASE_URL</code> and{" "}
+            <code>VITE_SUPABASE_ANON_KEY</code> to your environment variables,
+            then restart.
+          </p>
+        </div>
+      </Screen>
     );
-  else if (session === undefined)
-    body = <p className="adm-muted adm-center">Loading…</p>;
-  else if (!session) body = <LoginForm />;
-  else if (allowed === null)
-    body = <p className="adm-muted adm-center">Checking access…</p>;
-  else if (!allowed)
-    body = (
-      <div className="adm-card">
-        <h1>No access</h1>
-        <p>This account isn't an admin. Sign out and use the admin account.</p>
-      </div>
+  if (session === undefined)
+    return (
+      <Screen>
+        <p className="adm-muted">Loading…</p>
+      </Screen>
     );
-  else
-    body = (
-      <>
-        <nav className="adm-tabs" aria-label="Admin sections">
-          <button
-            className={tab === "gallery" ? "on" : ""}
-            onClick={() => switchTab("gallery")}
-          >
-            Gallery
+  if (!session) return <LoginForm />;
+  if (allowed === null)
+    return (
+      <Screen>
+        <p className="adm-muted">Checking access…</p>
+      </Screen>
+    );
+  if (!allowed)
+    return (
+      <Screen>
+        <div className="adm-card">
+          <h1>No access</h1>
+          <p>
+            This account isn't an admin. Sign out and use the admin account.
+          </p>
+          <button className="btn" onClick={signOut}>
+            Sign out
           </button>
-          <button
-            className={tab === "coaches" ? "on" : ""}
-            onClick={() => switchTab("coaches")}
-          >
-            Coaches
-          </button>
-          <button
-            className={tab === "admins" ? "on" : ""}
-            onClick={() => switchTab("admins")}
-          >
-            Admins &amp; account
-          </button>
-        </nav>
-        {tab === "gallery" && (
-          <>
-            <UploadForm categories={categories} onUploaded={reload} />
-            <PhotoManager
-              photos={photos}
-              categories={categories}
-              loading={loading}
-              error={error}
-              onChanged={reload}
-            />
-          </>
-        )}
-        {tab === "coaches" && <CoachManager />}
-        {tab === "admins" && <AdminAccounts email={session.user.email} />}
-      </>
+        </div>
+      </Screen>
     );
 
   return (
-    <div className="adm">
-      <header className="adm-bar">
-        <a href="/" className="adm-brand">
-          <img src={img("crest.png")} alt="" />
-          <span>
-            TONALDO FC<small>WEBSITE ADMIN</small>
-          </span>
-        </a>
-        <div>
-          <a href="/" className="adm-link">
-            View website
-          </a>
-          {session && (
-            <button className="adm-link" onClick={signOut}>
-              Sign out
-            </button>
-          )}
-        </div>
-      </header>
-      <main className="adm-main">{body}</main>
-    </div>
+    <AdminLayout tab={tab} email={session.user.email} onSignOut={signOut}>
+      {tab === "dashboard" && <DashboardHome />}
+      {tab === "gallery" && <GalleryManager />}
+      {tab === "coaches" && <CoachManager />}
+      {tab === "sponsors" && <SponsorManager />}
+      {tab === "admins" && <AdminAccounts email={session.user.email} />}
+    </AdminLayout>
   );
 }

@@ -15,6 +15,7 @@ import Testimonials from "./components/sections/Testimonials";
 import CallToAction from "./components/sections/CallToAction";
 import ContactSection from "./components/sections/ContactSection";
 import MapBlock from "./components/sections/MapBlock";
+import Sponsors from "./components/sections/Sponsors";
 
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 
@@ -40,6 +41,7 @@ export default function App() {
       <OpeningHours />
       <Coaches />
       <Gallery />
+      <Sponsors />
       <CallToAction />
       <ContactSection />
       <MapBlock />
