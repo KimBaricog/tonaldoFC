@@ -1,20 +1,39 @@
 // Open/closed badge for the map card, using Melbourne time.
-// Keep SCHEDULE in sync with HOURS in data/content.js (index 0 = Sunday, hours in 24h time).
-const SCHEDULE = {
-  0: [9, 18],
-  1: [9, 21],
-  2: [9, 21],
-  3: [9, 21],
-  4: [9, 21],
-  5: [9, 21],
-  6: [9, 12],
-};
+// `schedule` comes from buildSchedule(): { 0: [openHour, closeHour], ... } (0 = Sunday, 24h time, days not listed are closed).
 const TIME_ZONE = "Australia/Melbourne";
 const SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const hourLabel = (h) =>
-  h === 12 ? "12pm" : h > 12 ? `${h - 12}pm` : `${h}am`;
+const LONG = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
-export function getOpenStatus(now = new Date()) {
+function label(hours) {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  const suffix = h >= 12 ? "pm" : "am";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return m
+    ? `${h12}:${String(m).padStart(2, "0")}${suffix}`
+    : `${h12}${suffix}`;
+}
+
+export function getOpenStatus(schedule, now = new Date()) {
+  // The badge is a nice extra: if anything about it is wrong it must never break the page, so it just hides.
+  try {
+    return computeStatus(schedule, now);
+  } catch {
+    return null;
+  }
+}
+
+function computeStatus(schedule, now) {
+  if (!schedule || typeof schedule !== "object" || schedule instanceof Date)
+    return null;
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: TIME_ZONE,
     weekday: "short",
@@ -24,16 +43,20 @@ export function getOpenStatus(now = new Date()) {
   }).formatToParts(now);
   const get = (type) => parts.find((p) => p.type === type).value;
   const day = SHORT.indexOf(get("weekday"));
-  const minutes = (Number(get("hour")) % 24) * 60 + Number(get("minute"));
-  const [open, close] = SCHEDULE[day];
+  const hours = (Number(get("hour")) % 24) + Number(get("minute")) / 60;
+  const today = schedule[day];
 
-  if (minutes >= open * 60 && minutes < close * 60)
-    return { open: true, text: `Open now · closes ${hourLabel(close)}` };
-  if (minutes < open * 60)
-    return { open: false, text: `Closed · opens today at ${hourLabel(open)}` };
-  // the club is open every day, so after closing the next opening is always tomorrow
-  return {
-    open: false,
-    text: `Closed · opens tomorrow at ${hourLabel(SCHEDULE[(day + 1) % 7][0])}`,
-  };
+  if (today && hours >= today[0] && hours < today[1])
+    return { open: true, text: `Open now · closes ${label(today[1])}` };
+  if (today && hours < today[0])
+    return { open: false, text: `Closed · opens today at ${label(today[0])}` };
+  for (let i = 1; i <= 7; i++) {
+    const d = (day + i) % 7;
+    if (schedule[d])
+      return {
+        open: false,
+        text: `Closed · opens ${i === 1 ? "tomorrow" : LONG[d]} at ${label(schedule[d][0])}`,
+      };
+  }
+  return null;
 }

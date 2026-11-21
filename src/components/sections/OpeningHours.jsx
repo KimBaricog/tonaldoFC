@@ -1,17 +1,18 @@
-import { HOURS } from '../../data/content'
+import { useContent, edit } from '../../context/ContentContext'
 
 export default function OpeningHours() {
+  const c = useContent('hours')
   return (
     <section className="sec two">
       <div>
-        <div className="kick">Training times</div>
-        <h2 className="h2">Open every day of the week</h2>
-        <p className="lead">Book a session any day at our Melton base. Weekday evenings suit school and work schedules.</p>
-        <a href="#contact" className="btn dk">Check availability</a>
+        <div className="kick" {...edit('hours.kick')}>{c.kick}</div>
+        <h2 className="h2" {...edit('hours.title')}>{c.title}</h2>
+        <p className="lead" {...edit('hours.text')}>{c.text}</p>
+        <a href="#contact" className="btn dk" {...edit('hours.button')}>{c.button}</a>
       </div>
       <div className="tbl">
-        <div className="th">Opening hours</div>
-        {HOURS.map(([day, time]) => <div className="r" key={day}>{day}<span>{time}</span></div>)}
+        <div className="th" {...edit('hours.tableTitle')}>{c.tableTitle}</div>
+        {c.items.map((h, i) => <div className="r" key={i}><span {...edit(`hours.items.${i}.day`)}>{h.day}</span><span {...edit(`hours.items.${i}.time`)}>{h.time}</span></div>)}
       </div>
     </section>
   )

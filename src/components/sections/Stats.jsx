@@ -1,9 +1,10 @@
-import { STATS } from '../../data/content'
+import { useContent, edit } from '../../context/ContentContext'
 
 export default function Stats() {
+  const { items } = useContent('stats')
   return (
     <section className="stats">
-      {STATS.map(([value, label]) => <div key={label}><strong>{value}</strong><span>{label}</span></div>)}
+      {items.map((s, i) => <div key={i}><strong {...edit(`stats.items.${i}.value`)}>{s.value}</strong><span {...edit(`stats.items.${i}.label`)}>{s.label}</span></div>)}
     </section>
   )
 }

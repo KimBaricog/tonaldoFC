@@ -1,0 +1,580 @@
+/* =========================================================
+   TONALDO FC – Content Editor (admin.css)
+   Place at: src/components/admin/style/admin.css
+
+   NOTE: Brand tokens below are a football-club style guess.
+   Replace the values in :root with the real colours/fonts
+   from tonaldofc.com.au and the whole editor re-themes.
+   ========================================================= */
+
+:root {
+  /* Brand */
+  --tn-ink: #0b1220; /* deepest background / dark text */
+  --tn-navy: #111a2e; /* top bar, dark surfaces */
+  --tn-navy-2: #1b2744; /* hover on dark surfaces */
+  --tn-accent: #f5c518; /* primary accent (buttons, highlights) */
+  --tn-accent-ink: #1a1500; /* text on accent */
+  --tn-accent-soft: #fff6cf; /* flash / light accent wash */
+
+  /* Neutrals */
+  --tn-bg: #eef1f6;
+  --tn-card: #ffffff;
+  --tn-line: #dde2ec;
+  --tn-text: #17203a;
+  --tn-muted: #6a7590;
+
+  /* Status */
+  --tn-ok: #0f9d58;
+  --tn-err: #d93025;
+  --tn-warn-bg: #fff4d6;
+  --tn-warn-line: #f0c75a;
+
+  /* Shape */
+  --tn-radius: 12px;
+  --tn-radius-sm: 8px;
+  --tn-shadow:
+    0 1px 2px rgba(11, 18, 32, 0.06), 0 6px 18px rgba(11, 18, 32, 0.07);
+
+  /* Type */
+  --tn-font-head:
+    "Barlow Condensed", "Oswald", "Arial Narrow", system-ui, sans-serif;
+  --tn-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Layout */
+  --cx-panel-w: 420px;
+  --cx-bar-h: 64px;
+}
+
+/* ---------- Generic helpers used by the component ---------- */
+.adm-muted {
+  color: var(--tn-muted);
+}
+.adm-center {
+  text-align: center;
+  padding: 64px 16px;
+  font-family: var(--tn-font);
+}
+.adm-ok {
+  color: var(--tn-ok);
+  font-weight: 600;
+}
+.adm-err {
+  color: var(--tn-err);
+  font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
+.cx .btn,
+.btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--tn-font-head);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--tn-accent);
+  color: var(--tn-accent-ink);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease,
+    opacity 0.12s ease;
+}
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(245, 197, 24, 0.35);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--tn-accent);
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn.sm {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+.btn.ghost-dark {
+  background: transparent;
+  color: #e8ecf6;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.28);
+}
+.btn.ghost-dark:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.5);
+}
+
+/* ---------- Shell ---------- */
+.cx {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--tn-bg);
+  color: var(--tn-text);
+  font-family: var(--tn-font);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ---------- Top bar ---------- */
+.cx-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: var(--cx-bar-h);
+  padding: 10px 20px;
+  background: linear-gradient(180deg, var(--tn-navy), var(--tn-ink));
+  border-bottom: 3px solid var(--tn-accent);
+  color: #e8ecf6;
+  position: relative;
+  z-index: 5;
+}
+.cx-status {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.cx-status svg {
+  color: var(--tn-accent);
+}
+.cx-bar .adm-ok {
+  color: #5ee0a0;
+  font-weight: 500;
+  margin-left: 6px;
+}
+.cx-bar .adm-err {
+  color: #ff8a80;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+/* unsaved dot */
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tn-accent);
+  box-shadow: 0 0 0 0 rgba(245, 197, 24, 0.7);
+  animation: cx-pulse 1.8s infinite;
+  flex: 0 0 auto;
+}
+@keyframes cx-pulse {
+  70% {
+    box-shadow: 0 0 0 8px rgba(245, 197, 24, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 197, 24, 0);
+  }
+}
+
+/* Edit / Preview switch (small screens only) */
+.cx-view-switch {
+  display: none;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.cx-view-switch button {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: transparent;
+  color: #c9d1e6;
+  font: 700 0.85rem var(--tn-font-head);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cx-view-switch button.on {
+  background: var(--tn-accent);
+  color: var(--tn-accent-ink);
+}
+
+/* Device picker */
+.cx-devices {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.cx-devices button {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 34px;
+  border-radius: 999px;
+  background: transparent;
+  color: #c9d1e6;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+.cx-devices button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.cx-devices button.on {
+  background: var(--tn-accent);
+  color: var(--tn-accent-ink);
+}
+.cx-devices button:focus-visible,
+.cx-view-switch button:focus-visible {
+  outline: 2px solid var(--tn-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Load-failed warning ---------- */
+.cx-warn {
+  flex: 0 0 auto;
+  padding: 10px 20px;
+  background: var(--tn-warn-bg);
+  border-bottom: 1px solid var(--tn-warn-line);
+  color: #5c4300;
+  font-size: 0.9rem;
+}
+.cx-warn button {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin-left: 4px;
+  color: #5c4300;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Body: panel + preview ---------- */
+.cx-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--cx-panel-w) minmax(0, 1fr);
+}
+
+/* ---------- Left editing panel ---------- */
+.cx-panel {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px;
+  background: var(--tn-card);
+  border-right: 1px solid var(--tn-line);
+  scrollbar-width: thin;
+  scrollbar-color: #c3cadb transparent;
+}
+.cx-tip {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: var(--tn-radius-sm);
+  background: var(--tn-accent-soft);
+  border-left: 4px solid var(--tn-accent);
+  color: #4a3d00;
+  font-size: 0.86rem;
+}
+.cx-tip svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+/* ---------- Accordion sections ---------- */
+.cx-sec {
+  margin-bottom: 10px;
+  border: 1px solid var(--tn-line);
+  border-radius: var(--tn-radius);
+  background: var(--tn-card);
+  overflow: hidden;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.cx-sec.open {
+  border-color: var(--tn-navy);
+  box-shadow: var(--tn-shadow);
+}
+.cx-sec-head {
+  appearance: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  color: var(--tn-text);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--tn-font-head);
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.cx-sec-head > span {
+  flex: 1 1 auto;
+}
+.cx-sec-head:hover {
+  background: #f5f7fb;
+}
+.cx-sec.open .cx-sec-head {
+  background: var(--tn-navy);
+  color: #fff;
+}
+.cx-sec.open .cx-sec-head:hover {
+  background: var(--tn-navy-2);
+}
+.cx-sec-head:focus-visible {
+  outline: 3px solid var(--tn-accent);
+  outline-offset: -3px;
+}
+.cx-sec-head svg {
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+.cx-sec.open .cx-sec-head svg {
+  transform: rotate(180deg);
+  color: var(--tn-accent);
+}
+.cx-sec-body {
+  display: grid;
+  gap: 16px;
+  padding: 18px 16px 16px;
+  border-top: 3px solid var(--tn-accent);
+}
+
+/* ---------- Fields (FieldRenderer) ---------- */
+.cx-field {
+  display: grid;
+  gap: 6px;
+  padding: 2px;
+  border-radius: var(--tn-radius-sm);
+}
+.cx-sec-body label,
+.cx-field label,
+.cx-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tn-muted);
+}
+.cx-hint,
+.cx-field small {
+  color: var(--tn-muted);
+  font-size: 0.8rem;
+}
+
+.cx-sec-body input[type="text"],
+.cx-sec-body input[type="url"],
+.cx-sec-body input[type="email"],
+.cx-sec-body input[type="number"],
+.cx-sec-body input:not([type]),
+.cx-sec-body textarea,
+.cx-sec-body select,
+.cx-sec-body [contenteditable="true"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1.5px solid var(--tn-line);
+  border-radius: var(--tn-radius-sm);
+  background: #fbfcfe;
+  color: var(--tn-text);
+  font: inherit;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+.cx-sec-body textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+.cx-sec-body input:hover,
+.cx-sec-body textarea:hover,
+.cx-sec-body select:hover {
+  border-color: #b9c2d8;
+}
+.cx-sec-body input:focus,
+.cx-sec-body textarea:focus,
+.cx-sec-body select:focus,
+.cx-sec-body [contenteditable="true"]:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--tn-navy);
+  box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.55);
+}
+
+/* small buttons inside list-type fields (add / remove / move) */
+.cx-sec-body button:not(.cx-reset) {
+  appearance: none;
+  cursor: pointer;
+  padding: 7px 12px;
+  border: 1.5px solid var(--tn-line);
+  border-radius: var(--tn-radius-sm);
+  background: #fff;
+  color: var(--tn-text);
+  font: 600 0.85rem var(--tn-font);
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+.cx-sec-body button:not(.cx-reset):hover {
+  background: #f1f4fa;
+  border-color: var(--tn-navy);
+}
+
+/* reset link-button at the bottom of a section */
+.cx-reset {
+  appearance: none;
+  justify-self: start;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: var(--tn-muted);
+  font: 600 0.85rem var(--tn-font);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.cx-reset:hover:not(:disabled) {
+  color: var(--tn-err);
+}
+.cx-reset:disabled {
+  opacity: 0.45;
+  cursor: default;
+  text-decoration: none;
+}
+
+/* flash when a field is jumped to from the preview */
+.cx-flash {
+  animation: cx-flash 1.6s ease;
+}
+@keyframes cx-flash {
+  0%,
+  35% {
+    background: var(--tn-accent-soft);
+    box-shadow:
+      0 0 0 6px var(--tn-accent-soft),
+      0 0 0 8px var(--tn-accent);
+  }
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* ---------- Right preview ---------- */
+.cx-preview {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding: 18px; /* the component measures clientWidth - 36 */
+  overflow: auto;
+  background:
+    radial-gradient(
+        circle at 1px 1px,
+        rgba(17, 26, 46, 0.09) 1px,
+        transparent 0
+      )
+      0 0 / 18px 18px,
+    var(--tn-bg);
+}
+.cx-frame {
+  position: relative;
+  height: 100%;
+  min-height: 480px;
+  overflow: hidden;
+  border-radius: var(--tn-radius);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--tn-line),
+    0 18px 40px rgba(11, 18, 32, 0.16);
+  transition: width 0.25s ease;
+}
+.cx-frame iframe {
+  display: block;
+  border: 0;
+  background: #fff;
+}
+
+/* ---------- Smaller screens: one pane at a time ---------- */
+@media (max-width: 1100px) {
+  .cx-view-switch {
+    display: flex;
+  }
+  .cx-devices {
+    display: none; /* preview fills the screen, so sizes don't apply */
+  }
+  .cx-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cx[data-view="edit"] .cx-preview {
+    display: none;
+  }
+  .cx[data-view="preview"] .cx-panel {
+    display: none;
+  }
+  .cx-panel {
+    border-right: 0;
+  }
+  .cx-preview {
+    padding: 8px; /* the component adds +16 back to the width on small screens */
+  }
+}
+
+@media (max-width: 640px) {
+  .cx-bar {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .cx-status {
+    flex-basis: 100%;
+    order: -1;
+  }
+  .btn.sm {
+    padding: 8px 12px;
+  }
+  .cx-panel {
+    padding: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .cx-flash {
+    animation: none;
+  }
+  .btn,
+  .cx-frame,
+  .cx-sec-head svg {
+    transition: none;
+  }
+}

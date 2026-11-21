@@ -9,13 +9,21 @@ import {
 import AdminLayout from "../components/admin/AdminLayout";
 import LoginForm from "../components/admin/LoginForm";
 import DashboardHome from "../components/admin/DashboardHome";
+import ContentEditor from "../components/admin/ContentEditor";
 import GalleryManager from "../components/admin/GalleryManager";
 import CoachManager from "../components/admin/CoachManager";
 import SponsorManager from "../components/admin/SponsorManager";
 import AdminAccounts from "../components/admin/AdminAccounts";
 import "./style/admin.css";
 
-const TABS = ["dashboard", "gallery", "coaches", "sponsors", "admins"];
+const TABS = [
+  "dashboard",
+  "content",
+  "gallery",
+  "coaches",
+  "sponsors",
+  "admins",
+];
 const tabFromHash = () => {
   const h = window.location.hash.slice(1);
   return TABS.includes(h) ? h : "dashboard";
@@ -106,6 +114,7 @@ export default function AdminPage() {
   return (
     <AdminLayout tab={tab} email={session.user.email} onSignOut={signOut}>
       {tab === "dashboard" && <DashboardHome />}
+      {tab === "content" && <ContentEditor />}
       {tab === "gallery" && <GalleryManager />}
       {tab === "coaches" && <CoachManager />}
       {tab === "sponsors" && <SponsorManager />}

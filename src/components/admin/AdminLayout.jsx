@@ -5,6 +5,7 @@ import { img } from '../../utils/img'
 const NAV = [
   { group: 'Overview', items: [{ id: 'dashboard', label: 'Dashboard', icon: 'grid' }] },
   { group: 'Website content', items: [
+    { id: 'content', label: 'Site content', icon: 'edit' },
     { id: 'gallery', label: 'Gallery', icon: 'image' },
     { id: 'coaches', label: 'Coaches', icon: 'users' },
     { id: 'sponsors', label: 'Sponsors', icon: 'award' },
@@ -14,6 +15,7 @@ const NAV = [
 
 const TITLES = {
   dashboard: ['Dashboard', 'A quick look at your website content'],
+  content: ['Site content', 'Edit the text of your website and see it live'],
   gallery: ['Gallery', 'Upload and manage the photos on your website'],
   coaches: ['Coaches', 'Add coaches, their photos and details'],
   sponsors: ['Sponsors', 'Manage your sponsors and their logos'],
@@ -69,7 +71,7 @@ export default function AdminLayout({ tab, email, onSignOut, children }) {
           <div className="adm-title"><h1>{title}</h1><p>{subtitle}</p></div>
           <a href="/" target="_blank" rel="noreferrer" className="adm-top-link"><Icon name="external" size={16} /> View website</a>
         </header>
-        <main className="adm-page">{children}</main>
+        <main className={`adm-page${tab === 'content' ? ' wide' : ''}`}>{children}</main>
       </div>
     </div>
   )

@@ -1,36 +1,18 @@
-import { PILLARS } from "../../data/content";
-import { img } from "../../utils/img";
+import { useContent, edit } from '../../context/ContentContext'
+import { img } from '../../utils/img'
 
 export default function Training() {
+  const c = useContent('training')
   return (
     <section className="dark">
       <div>
-        <div className="kick gold">
-          1-on-1 training and Small Group Training
-        </div>
-        <h2>The total football development experience.</h2>
-        <p>
-          Every session combines technical drills, tactical understanding and
-          match play, guided by coaches who track progress and set clear next
-          steps.
-        </p>
-        <ul className="chk">
-          {PILLARS.map((p) => (
-            <li key={p}>
-              <i>✓</i>
-              {p}
-            </li>
-          ))}
-        </ul>
-        <a href="#contact" className="btn">
-          Enquire now
-        </a>
+        <div className="kick gold" {...edit('training.kick')}>{c.kick}</div>
+        <h2 {...edit('training.title')}>{c.title}</h2>
+        <p {...edit('training.text')}>{c.text}</p>
+        <ul className="chk">{c.pillars.map((p, i) => <li key={i} {...edit(`training.pillars.${i}`)}><i>✓</i>{p}</li>)}</ul>
+        <a href="#contact" className="btn" {...edit('training.button')}>{c.button}</a>
       </div>
-      <img
-        className="photo"
-        src={img("train.jpg")}
-        alt="Tonaldo FC players training"
-      />
+      <img className="photo" src={img('train.jpg')} alt="Tonaldo FC players training" />
     </section>
-  );
+  )
 }

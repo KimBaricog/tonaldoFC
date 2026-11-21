@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import SectionHead from "../ui/SectionHead";
 import CoachModal from "../ui/CoachModal";
 import CoachCard from "./CoachCard";
+import { useContent } from "../../context/ContentContext";
 import useCoaches from "../../hooks/useCoaches";
 import useSlider from "../../hooks/useSlider";
 import "./style/coaches.css";
 
 export default function Coaches() {
   const { coaches, loading, error } = useCoaches();
+  const c = useContent("coaches");
   const [open, setOpen] = useState(null); // coach shown in the "Read more" window
   const { ref, page, pages, measure, goTo, canSlide } = useSlider(
     coaches.length,
@@ -22,10 +24,7 @@ export default function Coaches() {
 
   return (
     <section className="sec" id="coaches">
-      <SectionHead
-        kick="Our coaches"
-        title="Learn from Our Certified and Experience Coaches"
-      />
+      <SectionHead kick={c.kick} title={c.title} text={c.text} path="coaches" />
 
       <div className="slider">
         {canSlide && (

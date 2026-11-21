@@ -1,12 +1,13 @@
-import { INFO_ITEMS } from '../../data/content'
+import { useContent, edit } from '../../context/ContentContext'
 
 export default function InfoBar() {
+  const { items } = useContent('info')
   return (
     <div className="info">
-      {INFO_ITEMS.map(([icon, title, text]) => (
-        <div key={title}>
-          <span className="ic dk">{icon}</span>
-          <span><h4>{title}</h4><p>{text}</p></span>
+      {items.map((it, i) => (
+        <div key={i}>
+          <span className="ic dk">{it.icon}</span>
+          <span><h4 {...edit(`info.items.${i}.title`)}>{it.title}</h4><p {...edit(`info.items.${i}.text`)}>{it.text}</p></span>
         </div>
       ))}
     </div>

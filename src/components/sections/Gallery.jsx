@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import SectionHead from "../ui/SectionHead";
 import Lightbox from "../ui/Lightbox";
+import { useContent } from "../../context/ContentContext";
 import useGallery from "../../hooks/useGallery";
 import useSlider from "../../hooks/useSlider";
 import useAutoplay from "../../hooks/useAutoplay";
-import useInView from "../../hooks/useinView";
+import useInView from "../../hooks/useInView";
 import "./style/gallery.css";
 
-const AUTO_SLIDE_MS = 2000; // time between automatic slides
+const AUTO_SLIDE_MS = 4000; // time between automatic slides
 const MAX_DOTS = 8; // more pages than this: show "3 / 12" instead of dots
 
 export default function Gallery() {
   const { images, loading, error } = useGallery();
+  const c = useContent("gallery");
   const [category, setCategory] = useState("All");
   const [active, setActive] = useState(null); // index of the open photo in `visible`
   const [playing, setPlaying] = useState(true); // the visitor's play/pause button
@@ -65,11 +67,7 @@ export default function Gallery() {
 
   return (
     <section className="sec" id="gallery" ref={sectionRef}>
-      <SectionHead
-        kick="Gallery"
-        title="See the academy in action"
-        text="Training sessions, players and coaches from around Tonaldo FC."
-      />
+      <SectionHead kick={c.kick} title={c.title} text={c.text} path="gallery" />
 
       {categories.length > 2 && (
         <div className="chips" role="tablist">

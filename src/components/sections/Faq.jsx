@@ -1,18 +1,19 @@
 import { useState } from 'react'
-import { FAQS } from '../../data/content'
+import { useContent, edit } from '../../context/ContentContext'
 
 export default function Faq() {
   const [openIndex, setOpenIndex] = useState(0)
+  const c = useContent('faq')
   return (
     <div>
-      <div className="kick">FAQ</div>
-      <h2 className="h2">Common questions</h2>
-      {FAQS.map(([question, answer], i) => (
-        <div className="q" key={question}>
+      <div className="kick" {...edit('faq.kick')}>{c.kick}</div>
+      <h2 className="h2" {...edit('faq.title')}>{c.title}</h2>
+      {c.items.map((it, i) => (
+        <div className="q" key={i}>
           <h3 onClick={() => setOpenIndex(openIndex === i ? -1 : i)}>
-            {question}<span>{openIndex === i ? '–' : '+'}</span>
+            <span {...edit(`faq.items.${i}.question`)}>{it.question}</span><span>{openIndex === i ? '–' : '+'}</span>
           </h3>
-          {openIndex === i && <p>{answer}</p>}
+          {(openIndex === i) && <p {...edit(`faq.items.${i}.answer`)}>{it.answer}</p>}
         </div>
       ))}
     </div>

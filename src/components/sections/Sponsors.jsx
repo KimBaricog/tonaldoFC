@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SectionHead from "../ui/SectionHead";
 import useSponsors from "../../hooks/useSponsors";
-import { EMAIL } from "../../data/content";
+import { useContent, edit } from "../../context/ContentContext";
 import "./style/sponsors.css";
 
 const Logo = ({ sponsor }) =>
@@ -40,6 +40,8 @@ const SECONDS_PER_CARD = 3.2; // lower = faster
 
 export default function Sponsors() {
   const { sponsors, loading, error } = useSponsors();
+  const c = useContent("sponsors");
+  const { email } = useContent("site");
   const [playing, setPlaying] = useState(true);
   if (loading || error || sponsors.length === 0) return null; // nothing to show yet: hide the whole section
 
@@ -58,11 +60,11 @@ export default function Sponsors() {
   return (
     <section className="sec" id="sponsors">
       <SectionHead
-        kick="Our partners"
-        title="Proudly supported by"
-        text="The businesses and people who back Tonaldo FC and help our players grow."
+        kick={c.kick}
+        title={c.title}
+        text={c.text}
+        path="sponsors"
       />
-      {/* 
 
       {principal.length > 0 && (
         <div className="sp-principal">
@@ -81,22 +83,6 @@ export default function Sponsors() {
           ))}
         </div>
       )}
-*/}
-      <div className="sp-cta">
-        <div>
-          <h3>Become a sponsor</h3>
-          <p>
-            Back local football and put your business in front of our players,
-            families and community.
-          </p>
-        </div>
-        <a
-          className="btn"
-          href={`mailto:${EMAIL}?subject=${encodeURIComponent("Sponsorship enquiry")}`}
-        >
-          Get in touch
-        </a>
-      </div>
 
       {partners.length > 0 && (
         <div
@@ -122,7 +108,7 @@ export default function Sponsors() {
               </Box>
             ))}
           </div>
-          {/*      {scrolling && (
+          {scrolling && (
             <button
               className="sp-ctrl"
               aria-label={playing ? "Pause scrolling" : "Resume scrolling"}
@@ -130,9 +116,23 @@ export default function Sponsors() {
             >
               {playing ? "❚❚" : "▶"}
             </button>
-          )} */}
+          )}
         </div>
       )}
+
+      <div className="sp-cta">
+        <div>
+          <h3 {...edit("sponsors.ctaTitle")}>{c.ctaTitle}</h3>
+          <p {...edit("sponsors.ctaText")}>{c.ctaText}</p>
+        </div>
+        <a
+          className="btn"
+          href={`mailto:${email}?subject=${encodeURIComponent("Sponsorship enquiry")}`}
+          {...edit("sponsors.ctaButton")}
+        >
+          {c.ctaButton}
+        </a>
+      </div>
     </section>
   );
 }
